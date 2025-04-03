@@ -1,10 +1,13 @@
 <?php
 session_start();
-require_once 'includes/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $pdo = require_once 'includes/config.php';
+        
+        if (!$pdo) {
+            throw new PDOException("Failed to connect to database");
+        }
 
         $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ?");
         $stmt->execute([$_POST['username']]);
