@@ -1,0 +1,20 @@
+modules = ["python-3.12", "web", "php-8.2", "php-8.1", "postgresql-17", "zig-0.11", "python-3.8", "nodejs-with-prybar-18"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Run PHP Server"
+
+[[workflows.workflow]]
+name = "Run PHP Server"
+author = 40717657
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "php -S 0.0.0.0:8000"
+
+[[ports]]
+localPort = 8000
+externalPort = 80
