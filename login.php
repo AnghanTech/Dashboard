@@ -5,7 +5,7 @@ require_once 'includes/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $pdo = new PDO("mysql:host=127.0.0.1;dbname=messaging_system", "root", "");
+        $pdo = new PDO("mysql:host=0.0.0.0;dbname=messaging_system", "root", "");
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
         // Create users table if it doesn't exist
@@ -41,8 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Login error: " . $e->getMessage();
     }
 }
-?>
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
