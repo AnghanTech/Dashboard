@@ -3,11 +3,11 @@
 session_start();
 
 // Database configuration
-$db_host = 'localhost';  // MySQL server runs locally on Replit
+$db_host = 'localhost';
 $db_user = 'root';
 $db_pass = 'root';
 $db_name = 'messaging_system';
-$db_port = 3306;
+$db_port = 8082;  // Match the port used in dashboard.php
 
 // Create connection
 try {
