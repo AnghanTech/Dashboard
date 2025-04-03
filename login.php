@@ -24,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$hash]);
         }
         
-        // Login logic
         $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ?");
         $stmt->execute([$_POST['username']]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
