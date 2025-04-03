@@ -1,6 +1,5 @@
 
 <?php
-// Start session before any output
 session_start();
 
 // Database configuration
