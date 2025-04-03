@@ -10,6 +10,15 @@ $db_pass = 'root';
 $db_name = 'messaging_system';
 
 try {
+    // Create database if it doesn't exist
+    $temp_conn = mysqli_connect($db_host, $db_user, $db_pass);
+    if (!$temp_conn) {
+        throw new Exception(mysqli_connect_error());
+    }
+    mysqli_query($temp_conn, "CREATE DATABASE IF NOT EXISTS $db_name");
+    mysqli_close($temp_conn);
+
+    // Connect to the database
     $conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
     if (!$conn) {
         throw new Exception(mysqli_connect_error());
@@ -54,7 +63,7 @@ try {
         $error = "Invalid username or password";
     }
 } catch (Exception $e) {
-    $error = "Database connection error: " . $e->getMessage();
+    $error = "Database error: " . $e->getMessage();
 }
 ?>
 <!DOCTYPE html>
