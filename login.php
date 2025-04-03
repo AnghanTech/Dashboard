@@ -1,20 +1,20 @@
+
 <?php
-// Start session before any output
 session_start();
 
 // Database configuration
-$db_host = '0.0.0.0';
+$db_host = '0.0.0.0';  // Use 0.0.0.0 instead of localhost for Replit
 $db_user = 'root';
 $db_pass = 'root';
 $db_name = 'messaging_system';
-$db_port = 3306;  // Match the port used in dashboard.php
+$db_port = 3306;
 
 // Create connection
 try {
     $conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name, $db_port);
     
     if (!$conn) {
-        throw new Exception('Connection failed: ' . mysqli_connect_error());
+        throw new Exception(mysqli_connect_error());
     }
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
