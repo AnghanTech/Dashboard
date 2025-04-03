@@ -19,7 +19,7 @@ try {
     
     if ($stmt->fetchColumn() == 0) {
         $stmt = $pdo->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-        $hashedPassword = password_hash('admin123', PASSWORD_DEFAULT);
+        $hashedPassword = password_hash('password', PASSWORD_DEFAULT);
         $stmt->execute(['admin', $hashedPassword]);
     }
     
