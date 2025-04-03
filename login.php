@@ -1,5 +1,6 @@
 
 <?php
+ob_start();
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user && password_verify($_POST['password'], $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
-            session_write_close();
+            $_SESSION['last_activity'] = time();
             header('Location: dashboard.php');
             exit();
         } else {
