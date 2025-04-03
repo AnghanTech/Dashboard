@@ -3,11 +3,11 @@
 session_start();
 
 // Database configuration
-$db_host = '0.0.0.0';  // Use for external connections on Replit
+$db_host = 'localhost';  // MySQL server runs locally on Replit
 $db_user = 'root';
 $db_pass = 'root';
 $db_name = 'messaging_system';
-$db_port = 3306;  // Ensure this matches your database configuration
+$db_port = 3306;
 
 // Create connection
 try {
