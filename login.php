@@ -1,9 +1,10 @@
 
 <?php
+// Start session
 session_start();
 
 // Database configuration
-$db_host = '0.0.0.0';  // Use 0.0.0.0 instead of localhost for Replit
+$db_host = '0.0.0.0';  // Use 0.0.0.0 instead of localhost
 $db_user = 'root';
 $db_pass = 'root';
 $db_name = 'messaging_system';
