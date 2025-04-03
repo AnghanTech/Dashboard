@@ -39,6 +39,7 @@ mysqli_close($conn);
         <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h1>
         <nav>
             <ul class="nav">
+                <li class="nav-item"><a href="manage_content.php" class="nav-link">Manage Content</a></li>
                 <li class="nav-item"><a href="notices.php" class="nav-link">Manage Notices</a></li>
                 <li class="nav-item"><a href="holidays.php" class="nav-link">Manage Holidays</a></li>
                 <li class="nav-item"><a href="events.php" class="nav-link">Manage Events</a></li>
