@@ -1,95 +1,87 @@
 
 <?php
 session_start();
-$error = '';
+require_once 'includes/config.php';
 
-// Database configuration
-$db_host = '0.0.0.0';
-$db_user = 'root';
-$db_pass = 'root';
-$db_name = 'messaging_system';
-
-try {
-    // Create database if it doesn't exist
-    $temp_conn = mysqli_connect($db_host, $db_user, $db_pass);
-    if (!$temp_conn) {
-        throw new Exception(mysqli_connect_error());
-    }
-    mysqli_query($temp_conn, "CREATE DATABASE IF NOT EXISTS $db_name");
-    mysqli_close($temp_conn);
-
-    // Connect to the database
-    $conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
-    if (!$conn) {
-        throw new Exception(mysqli_connect_error());
-    }
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $username = mysqli_real_escape_string($conn, $_POST['username']);
-        $password = $_POST['password'];
-
-        // Create users table if it doesn't exist
-        $sql = "CREATE TABLE IF NOT EXISTS users (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(50) NOT NULL UNIQUE,
-            password VARCHAR(255) NOT NULL
-        )";
-        mysqli_query($conn, $sql);
-
-        // Check if admin user exists, if not create it
-        $check_admin = "SELECT * FROM users WHERE username='admin'";
-        $result = mysqli_query($conn, $check_admin);
-        if(mysqli_num_rows($result) == 0) {
-            $admin_pass = password_hash('admin123', PASSWORD_DEFAULT);
-            $create_admin = "INSERT INTO users (username, password) VALUES ('admin', '$admin_pass')";
-            mysqli_query($conn, $create_admin);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $pdo = new PDO("mysql:host=$db_host;port=$db_port;dbname=$db_name", $db_user, $db_pass);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ?");
+        $stmt->execute([$_POST['username']]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($user && password_verify($_POST['password'], $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['last_activity'] = time();
+            
+            header('Location: dashboard.php');
+            exit();
+        } else {
+            $error = "Invalid username or password";
         }
-
-        // Verify login
-        $query = "SELECT * FROM users WHERE username = ?";
-        $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "s", $username);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-
-        if ($row = mysqli_fetch_assoc($result)) {
-            if (password_verify($password, $row['password'])) {
-                $_SESSION['user_id'] = $row['id'];
-                $_SESSION['username'] = $row['username'];
-                header('Location: dashboard.php');
-                exit();
-            }
-        }
-        $error = "Invalid username or password";
+    } catch (PDOException $e) {
+        $error = "Login error: " . $e->getMessage();
     }
-} catch (Exception $e) {
-    $error = "Database error: " . $e->getMessage();
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CMS System</title>
+    <link rel="stylesheet" href="bootstrap_mob.css">
+    <style>
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+        }
+        .login-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .logo-container img {
+            max-width: 150px;
+        }
+    </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2 class="text-center mb-4">CMS Login</h2>
-        <?php if ($error): ?>
-            <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-        <form method="POST" action="login.php">
-            <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input type="text" name="username" class="form-control" required>
+    <div class="login-wrapper">
+        <div class="container">
+            <div class="login-card">
+                <div class="logo-container">
+                    <img src="sdb_sf.png" alt="Logo">
+                </div>
+                <?php if (isset($error)): ?>
+                    <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+                <?php endif; ?>
+                <form method="POST" action="login.php">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-        </form>
+        </div>
     </div>
 </body>
 </html>
