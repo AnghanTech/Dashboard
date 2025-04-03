@@ -1,13 +1,13 @@
 <?php
 session_start();
 $error = '';
-$db_host = '127.0.0.1';
+$db_host = '0.0.0.0';
 $db_user = 'root';
-$db_pass = '';
+$db_pass = 'root';
 $db_name = 'messaging_system';
 
 try {
-    $conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
+    $conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name, 3306);
     if (!$conn) {
         throw new Exception(mysqli_connect_error());
     }
