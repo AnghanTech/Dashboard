@@ -3,11 +3,11 @@
 session_start();
 
 // Database configuration
-$db_host = 'localhost';
+$db_host = '0.0.0.0';
 $db_user = 'root';
 $db_pass = 'root';
 $db_name = 'messaging_system';
-$db_port = 8082;  // Match the port used in dashboard.php
+$db_port = 3306;  // Match the port used in dashboard.php
 
 // Create connection
 try {
