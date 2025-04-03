@@ -5,7 +5,7 @@ try {
     $pdo = new PDO('sqlite:' . $db_path);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Create tables if they don't exist
+    // Create users table if it doesn't exist
     $pdo->exec("CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
@@ -13,9 +13,15 @@ try {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )");
     
-    // Insert default admin user if not exists (password: admin123)
-    $stmt = $pdo->prepare("INSERT OR IGNORE INTO users (username, password) VALUES (?, ?)");
-    $stmt->execute(['admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi']);
+    // Create default admin user if not exists
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE username = ?");
+    $stmt->execute(['admin']);
+    
+    if ($stmt->fetchColumn() == 0) {
+        $stmt = $pdo->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+        $hashedPassword = password_hash('admin123', PASSWORD_DEFAULT);
+        $stmt->execute(['admin', $hashedPassword]);
+    }
     
     return $pdo;
 } catch(PDOException $e) {
