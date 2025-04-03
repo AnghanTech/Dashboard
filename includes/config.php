@@ -1,12 +1,13 @@
 
 <?php
 try {
-    $db_url = getenv('DATABASE_URL');
-    if (!$db_url) {
-        throw new Exception('DATABASE_URL environment variable is not set');
-    }
+    $db_host = '127.0.0.1';
+    $db_user = 'runner';
+    $db_pass = '';
+    $db_name = 'messaging_system';
     
-    $pdo = new PDO($db_url);
+    $dsn = "pgsql:host=$db_host;dbname=$db_name";
+    $pdo = new PDO($dsn, $db_user, $db_pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     return $pdo;
 } catch(PDOException $e) {
