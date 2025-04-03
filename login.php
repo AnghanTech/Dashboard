@@ -7,7 +7,7 @@ $db_pass = '';
 $db_name = 'messaging_system';
 
 try {
-    $conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name, $db_port);
+    $conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
     if (!$conn) {
         throw new Exception(mysqli_connect_error());
     }
