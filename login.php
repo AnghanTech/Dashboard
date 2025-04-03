@@ -1,12 +1,11 @@
 
 <?php
-// Ensure no output before session_start
 session_start();
 require_once 'includes/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $pdo = new PDO("mysql:host=0.0.0.0;port=3306;dbname=messaging_system", "root", "root");
+        $pdo = new PDO("mysql:host=127.0.0.1;dbname=messaging_system", "root", "");
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
         // Create users table if it doesn't exist
@@ -16,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             password VARCHAR(255) NOT NULL
         )");
         
-        // Check if admin user exists, if not create it
+        // Create default admin user if not exists
         $stmt = $pdo->prepare("SELECT id FROM users WHERE username = 'admin' LIMIT 1");
         $stmt->execute();
         if (!$stmt->fetch()) {
@@ -25,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$hash]);
         }
         
+        // Login logic
         $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ?");
         $stmt->execute([$_POST['username']]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -32,8 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user && password_verify($_POST['password'], $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
-            $_SESSION['last_activity'] = time();
-            
             header('Location: dashboard.php');
             exit();
         } else {
@@ -86,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php if (isset($error)): ?>
                     <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
                 <?php endif; ?>
-                <form method="POST" action="login.php">
+                <form method="POST">
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
                         <input type="text" class="form-control" id="username" name="username" required>
