@@ -1,12 +1,29 @@
 
 <?php
+// Ensure no output before session_start
 session_start();
 require_once 'includes/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $pdo = new PDO("mysql:host=$db_host;port=$db_port;dbname=$db_name", $db_user, $db_pass);
+        $pdo = new PDO("mysql:host=0.0.0.0;port=3306;dbname=messaging_system", "root", "root");
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Create users table if it doesn't exist
+        $pdo->exec("CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            username VARCHAR(50) NOT NULL UNIQUE,
+            password VARCHAR(255) NOT NULL
+        )");
+        
+        // Check if admin user exists, if not create it
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE username = 'admin' LIMIT 1");
+        $stmt->execute();
+        if (!$stmt->fetch()) {
+            $hash = password_hash('admin123', PASSWORD_DEFAULT);
+            $stmt = $pdo->prepare("INSERT INTO users (username, password) VALUES ('admin', ?)");
+            $stmt->execute([$hash]);
+        }
         
         $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ?");
         $stmt->execute([$_POST['username']]);
